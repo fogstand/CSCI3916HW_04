@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7f16e983-8e6f-46a5-b53f-acddd6aabede" name="Default Changelist" comment="latest push">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Review.js" beforeDir="false" afterPath="$PROJECT_DIR$/Review.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movies.js" beforeDir="false" afterPath="$PROJECT_DIR$/movies.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +62,7 @@
       <workItem from="1615617648564" duration="181000" />
       <workItem from="1615617844301" duration="8242000" />
       <workItem from="1615703747318" duration="3225000" />
-      <workItem from="1616477188056" duration="7820000" />
+      <workItem from="1616477188056" duration="8471000" />
     </task>
     <task id="LOCAL-00001" summary="new">
       <created>1615586276089</created>
@@ -102,7 +99,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615644833176</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="latest push">
+      <created>1616684860394</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1616684860394</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 mongoose.Promise= global.Promise;
 mongoose.connect(process.env.DB,{useNewUrlParser: true});
-mongoose.set('userCreateIndex',true);
+mongoose.set('useCreateIndex',true);
 
 var ReviewSchema = new Schema({
     name:{type: String, required : true},

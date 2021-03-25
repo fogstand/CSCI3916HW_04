@@ -24,7 +24,7 @@ app.use(passport.initialize());
 
 var router = express.Router();
 var Movie = require('./movies');
-var Review = require('./reviews');
+var Review = require('./Review');
 
 router.route('/movie')
     //save movie
