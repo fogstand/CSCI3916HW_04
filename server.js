@@ -13,6 +13,7 @@ var authController = require('./auth');
 var authJwtController = require('./auth_jwt');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
+var mongoose = require("mongoose")
 var User = require('./Users');
 
 var app = express();
@@ -119,14 +120,14 @@ router.route('/movie/:movieid')
         var needReview = req.query.reviews;
         Movie.findById(id, function (err, movie) {
             if (err) {
-                res.json({message: "ERROR NOT FOUND"});
+                res.json({message: " movie is  not found"});
             }
             else {
-                if(needReview="true"){
+                if(needReview=="true"){
                     Movie.aggregate(
                         [
                             {
-                                $match:{'_id': mongoose.Types.ObjectId(req.query.movieid)}
+                                $match:{'_id': mongoose.Types.ObjectId(req.params.movieid)}
                             },
                             {
                                 $lookup:{
@@ -173,32 +174,61 @@ router.route('/movie/:id')
             }
         })
     });
-router.route('./review')
-    .post(authJwtController.isAuthenticated,function(req,res)
-    {
-        const usertoken= req.headers.authorization;
-        const token=usertoken.split(' ');
-        const decoded = jwt.verify(token[1],process.env.SECRET_KEY);
-
-        Movie.find({_id: req.body.Movie_ID}, function(err,data)
-        {
-            if(err){
-                res.status(400).json({message: "Wrong query"});
-
+router.route('/review')
+    .post(authJwtController.isAuthenticated, function(req, res){
+        let usertoken = req.headers.authorization;
+        let token = usertoken.split(' ');
+        let decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+        let id = req.body.movieid;
+        Movie.findById(id, function (err, something){
+            if (err) {
+                res.json({message: "Error Movie not exist."});
             }
-            else if(data != null){
-                let rev = new Review({
-                    Name: decoded.username,
-                    Review: req.body.Review,
-                    Rating: req.body.Rating,
-                    Movie_ID: req,body,
+            else if (something) {
+                var review = new Review();
+                review.name = decoded.username;
+                review.review = req.body.review;
+                review.rating = req.body.rating;
+                review.movieid = req.body.movieid;
+
+                review.save(function (err) {
+                    if (err) {
+                        res.json({message: "Review has not saved because you missing required fields!"});
+                    } else {
+
+                        Review.find({movieid: req.body.movieid}, function (err, allReviews) {
+                            if (err) {
+                                res.status(400).json({message: "It's broken!"});
+                            } else {
+                                let avg = 0;
+
+                                console.log(allReviews);
+                                allReviews.forEach(function (review) {
+                                    avg += review.rating;
+                                    console.log(review);
+                                });
+                                avg = avg / allReviews.length;
+
+
+                                Movie.update(
+                                    {_id: id},
+                                    {$set: {averageRating: avg}}, function (err, doc) {
+                                        if (err) {
+                                            res.json({error: err});
+                                        } else if (doc != null) {
+                                            res.json({message: "Review 🚀 saved to Mongo DB"});
+                                        }
+                                    });
+
+                            }
+                        })
+                    }
                 })
+            }else {
+                res.json({failure: "Movie not found."});
             }
         })
-    })
-
-
-
+    });
 router.route('/users/:userId')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.userId;
