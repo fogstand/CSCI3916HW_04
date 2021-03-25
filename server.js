@@ -24,6 +24,7 @@ app.use(passport.initialize());
 
 var router = express.Router();
 var Movie = require('./movies');
+var Review = require('./reviews');
 
 router.route('/movie')
     //save movie
@@ -34,6 +35,9 @@ router.route('/movie')
         movie.yearReleased = req.body.yearReleased;
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
+        movie.ImageURI= req.body.ImageURI;
+        movie.averageRating = req.body.averageRating;
+
 
         //check if movies exist, maybe error or it has <3 errors.
         Movie.findOne({title: req.body.title}, function(err, found){
@@ -62,8 +66,33 @@ router.route('/movie')
     //finds all movies
     .get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movie) {
+            var needReview= req.query.reviews;
             if(err) res.json({message: "Ooops, something is wrong. Read error. \n", error: err});
-            res.json(movie);
+            if(needReview =="true"){
+                Movie.aggregate([
+                    {
+                        $lookup:{
+                            from:'reviews',
+                            localField: '_id',
+                            foreignField: 'movieid',
+                            as: 'Reviews'
+                        }
+                    },
+                    {
+                        $sort : {averageRating:-1}
+                    }
+
+                ],function(err,data){
+                    if(err){
+                        res.send(err);
+                    }else{
+                        res.json(data);
+                    }
+                });
+            }else {
+                res.json(movie);
+            }
+
         })
     })
 
@@ -87,16 +116,45 @@ router.route('/movie')
 router.route('/movie/:movieid')
     .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.movieid;
+        var needReview = req.query.reviews;
         Movie.findById(id, function (err, movie) {
-            if (err) res.send(err);
-            res.json(movie);
+            if (err) {
+                res.json({message: "ERROR NOT FOUND"});
+            }
+            else {
+                if(needReview="true"){
+                    Movie.aggregate(
+                        [
+                            {
+                                $match:{'_id': mongoose.Types.ObjectId(req.query.movieid)}
+                            },
+                            {
+                                $lookup:{
+                                    from: 'reviews',
+                                    localField: '_id',
+                                    foreignField: 'movieid',
+                                    as: 'Reviews'
+                                }
+                            }
+                        ],function(err,data){
+                            if(err){
+                                res.send(err);
+                            }
+                            else{
+                                res.json(data);
+                            }
+                        });
+                }  else{
+                    res.json(movie);
+                }
+            }
         })
     });
 
 //update movie
 router.route('/movie/:id')
     .put(authJwtController.isAuthenticated, function (req, res) {
-        var conditions = {_id: req.params.id};
+        var conditions = {_id: req.params.id}; //did you do this part?
         Movie.findOne({title: req.body.title}, function(err, found) {
             if (err) {
                 res.json({message: "Read error \n", error: err});
@@ -115,6 +173,31 @@ router.route('/movie/:id')
             }
         })
     });
+router.route('./review')
+    .post(authJwtController.isAuthenticated,function(req,res)
+    {
+        const usertoken= req.headers.authorization;
+        const token=usertoken.split(' ');
+        const decoded = jwt.verify(token[1],process.env.SECRET_KEY);
+
+        Movie.find({_id: req.body.Movie_ID}, function(err,data)
+        {
+            if(err){
+                res.status(400).json({message: "Wrong query"});
+
+            }
+            else if(data != null){
+                let rev = new Review({
+                    Name: decoded.username,
+                    Review: req.body.Review,
+                    Rating: req.body.Rating,
+                    Movie_ID: req,body,
+                })
+            }
+        })
+    })
+
+
 
 router.route('/users/:userId')
     .get(authJwtController.isAuthenticated, function (req, res) {
@@ -135,7 +218,7 @@ router.route('/users')
         });
     });
 
-//{name : 'oleksiy', username : 'oleksiy', password : 'password'}
+
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, message: 'Please pass username and password.'});

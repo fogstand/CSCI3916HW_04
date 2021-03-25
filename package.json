@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ravishersingh2/CSCI3916_HW2.git"
+    "url": "git+https://github.com/ravishersingh2/CSCI3916_HW3.git"
   },
   "keywords": [
     "Movie"
@@ -16,9 +16,9 @@
   "author": "Ravisher Singh",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ravishersingh2/CSCI3916_HW2/issues"
+    "url": "https://github.com/ravishersingh2/CSCI3916_HW3/issues"
   },
-  "homepage": "https://github.com/ravishersingh2/CSCI3916_HW2#readme",
+  "homepage": "https://github.com/ravishersingh2/CSCI3916_HW3#readme",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
