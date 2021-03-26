@@ -193,7 +193,7 @@ router.route('/review')
 
                 review.save(function (err) {
                     if (err) {
-                        res.json({message: "Review has not saved because you missing required fields!"});
+                        res.json({message: "Review did not saved because it is missing required fields!"});
                     } else {
 
                         Review.find({movieid: req.body.movieid}, function (err, allReviews) {
