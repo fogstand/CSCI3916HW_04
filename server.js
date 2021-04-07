@@ -1,5 +1,5 @@
 /*
-CSC3916 HW2
+CSC3916 HW4
 File: Server.js
 Description: Web API scaffolding for Movie API
  */
@@ -26,6 +26,9 @@ app.use(passport.initialize());
 var router = express.Router();
 var Movie = require('./movies');
 var Review = require('./Review');
+
+
+
 
 router.route('/movie')
     //save movie
@@ -249,6 +252,9 @@ router.route('/users')
     });
 
 
+
+
+
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, message: 'Please pass username and password.'});
@@ -293,6 +299,33 @@ router.post('/signin', function(req, res) {
         });
     });
 });
+
+router.post('/searchmovie', function(req, res) {
+    Movie.aggregate([
+        {
+            "$match":{
+                "$or":[
+                    {
+                        "title": { $regex: req.body.search, $options: 'gi' }
+                    },
+                    {
+                        "actors.actorName": { $regex: req.body.search, $options: 'gi' }
+                    }
+                ]
+            }
+        }
+    ],function(err,data){
+        if(err){
+            res.send(err);
+        }else{
+            res.json(data);
+        }
+    });
+});
+
+
+
+
 
 //All other routes and methods
 router.all('*', function(req, res) {
