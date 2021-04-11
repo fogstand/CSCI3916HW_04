@@ -219,7 +219,7 @@ router.route('/review')
                                         if (err) {
                                             res.json({error: err});
                                         } else if (doc != null) {
-                                            res.json({message: "Review 🚀 saved to Mongo DB"});
+                                            res.json({message: "Review 🚀 saved to Mongo DB", movieId:req.body.movieid});
                                         }
                                     });
 
